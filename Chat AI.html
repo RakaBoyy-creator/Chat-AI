@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Axio Infinity - AI</title>
+    <style>
+        /* --- DESIGN SYSTEM (ULTRA MODERN & LIGHTWEIGHT) --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Google Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-dark: #0b0c10;
+            --panel-bg: rgba(22, 23, 27, 0.7);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent-glow: rgba(99, 102, 241, 0.25);
+            --bubble-user: rgba(79, 70, 229, 0.25);
+            --bubble-bot: rgba(30, 41, 59, 0.35);
+            --border-light: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background: #030406;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        /* --- MOBILE CONTAINER --- */
+        .mobile-frame {
+            width: 100%;
+            max-width: 395px;
+            height: 812px;
+            max-height: 94vh;
+            background: radial-gradient(circle at top, #141722 0%, #0b0c10 100%);
+            border-radius: 36px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- HEADER --- */
+        header {
+            padding: 18px 20px;
+            background: rgba(11, 12, 16, 0.8);
+            border-bottom: 1px solid var(--border-light);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 40px;
+            height: 40px;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #6366f1;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            background: #10b981;
+            border: 2px solid #141722;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 1px;
+            right: 1px;
+        }
+
+        .header-info h1 {
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: -0.1px;
+        }
+
+        .header-info p {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* --- CHAT AREA --- */
+        .chat-container {
+            flex: 1;
+            padding: 24px 18px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        .chat-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        /* --- GELEMBUNG CHAT (GLASSMORPHISM STYLE WITH TIME) --- */
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 82%;
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .message-wrapper.user {
+            align-self: flex-end;
+            align-items: flex-end;
+        }
+
+        .message-wrapper.bot {
+            align-self: flex-start;
+            align-items: flex-start;
+        }
+
+        .message {
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .message-wrapper.user .message {
+            background: var(--bubble-user);
+            color: #fff;
+            border-radius: 20px 20px 4px 20px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+        }
+
+        .message-wrapper.bot .message {
+            background: var(--bubble-bot);
+            color: #e2e8f0;
+            border-radius: 20px 20px 20px 4px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Timestamp / Jam */
+        .timestamp {
+            font-size: 0.65rem;
+            color: #64748b;
+            margin-top: 4px;
+            padding: 0 4px;
+            user-select: none;
+        }
+
+        /* --- INPUT BAR --- */
+        .input-bar-container {
+            padding: 12px 16px 22px 16px;
+            background: rgba(11, 12, 16, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-light);
+        }
+
+        .input-bar {
+            background: var(--panel-bg);
+            border-radius: 24px;
+            padding: 5px 5px 5px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .input-bar:focus-within {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 0 12px var(--accent-glow);
+            background: rgba(22, 23, 27, 0.9);
+        }
+
+        .text-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 0.92rem;
+            outline: none;
+            padding: 10px 0;
+        }
+
+        .text-input::placeholder {
+            color: #64748b;
+        }
+
+        .send-btn {
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .send-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .send-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: #475569;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Tombol menyala transisi lembut jika input terisi */
+        .input-bar:focus-within .send-btn svg,
+        .send-btn.active svg {
+            fill: #818cf8;
+            transform: scale(1.05);
+        }
+
+        /* Typing Loader */
+        .typing-loader {
+            display: flex;
+            gap: 5px;
+            padding: 6px 4px;
+        }
+
+        .typing-loader span {
+            width: 5px;
+            height: 5px;
+            background-color: #6366f1;
+            border-radius: 50%;
+            animation: bounceFuzz 1.2s infinite ease-in-out both;
+        }
+
+        .typing-loader span:nth-child(1) { animation-delay: -0.3s; }
+        .typing-loader span:nth-child(2) { animation-delay: -0.15s; }
+
+        @keyframes bounceFuzz {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+            40% { transform: scale(1.2); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-frame">
+        <header>
+            <div class="avatar-container">
+                <img class="avatar-img" src="https://img2.pixhost.to/images/7919/726635554_alip-1778854350853.jpg" alt="Axio Infinity">
+                <div class="status-dot"></div>
+            </div>
+            <div class="header-info">
+                <h1>Axio Infinity</h1>
+                <p>Oleh RakaBoyy-DEV</p>
+            </div>
+        </header>
+
+        <div class="chat-container" id="chatContainer">
+            <div class="message-wrapper bot">
+                <div class="message">
+                    Halo! Ada yang bisa saya bantu hari ini? Tanya apa saja, saya siap menjawabnya dengan santai.
+                </div>
+                <div class="timestamp" id="initialTime">00:00</div>
+            </div>
+        </div>
+
+        <div class="input-bar-container">
+            <div class="input-bar">
+                <input type="text" id="chatInput" class="text-input" placeholder="Tulis masukan di sini..." onkeypress="handleKeyPress(event)" oninput="toggleSendIconColor()">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set waktu awal untuk pesan pertama pembuka
+        document.getElementById('initialTime').innerText = getFormattedTime();
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Format Waktu Sekarang (Jam:Menit)
+        function getFormattedTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        function toggleSendIconColor() {
+            const chatInput = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('sendBtn');
+            if (chatInput.value.trim() !== "") {
+                sendBtn.classList.add('active');
+            } else {
+                sendBtn.classList.remove('active');
+            }
+        }
+
+        // Fungsi khusus menghapus semua simbol asterisk (*) agar chat bersih
+        function removeAsterisks(text) {
+            return text.replace(/\*/g, '');
+        }
+
+        async function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const messageText = chatInput.value.trim();
+
+            if (!messageText) return;
+
+            const chatContainer = document.getElementById('chatContainer');
+            const currentTimeStr = getFormattedTime();
+
+            // 1. Tampilkan pesan user ke chatroom
+            const userWrapper = document.createElement('div');
+            userWrapper.className = 'message-wrapper user';
+            
+            const userBubble = document.createElement('div');
+            userBubble.className = 'message';
+            userBubble.innerText = messageText;
+
+            const userTime = document.createElement('div');
+            userTime.className = 'timestamp';
+            userTime.innerText = currentTimeStr;
+
+            userWrapper.appendChild(userBubble);
+            userWrapper.appendChild(userTime);
+            chatContainer.appendChild(userWrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Bersihkan input
+            chatInput.value = "";
+            toggleSendIconColor();
+
+            // 2. Tampilkan indikator mengetik AI
+            const botWrapper = document.createElement('div');
+            botWrapper.className = 'message-wrapper bot';
+            
+            const botBubble = document.createElement('div');
+            botBubble.className = 'message';
+            botBubble.innerHTML = `
+                <div class="typing-loader">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            
+            botWrapper.appendChild(botBubble);
+            chatContainer.appendChild(botWrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // 3. Prompt System Pintar: Hanya menyebut identitas jika ditanya secara langsung
+            const systemPrompt = "Kamu adalah AI bernama 'Axio Infinity' yang diciptakan oleh 'RakaBoyy-DEV'. PENTING: Kamu tidak perlu menyebutkan namamu atau penciptamu di setiap pesan, kecuali jika pengguna secara spesifik bertanya tentang siapa kamu, siapa namamu, siapa pembuatmu, atau siapa developermu. Jawablah sisa pertanyaan dengan gaya bahasa santai, asik, cerdas, dan dilarang keras menggunakan simbol tanda bintang (*) di dalam responsmu.";
+            const finalPrompt = systemPrompt + " Pertanyaan User: " + messageText;
+
+            try {
+                const apiKey = 'alip-ktb4i2rdmnuhnsj9d74m';
+                const session = 'axio_' + Math.random().toString(36).substring(7);
+
+                const targetUrl = new URL('https://api.clutch.web.id/ai/gemini-vision');
+                targetUrl.searchParams.append('apikey', apiKey);
+                targetUrl.searchParams.append('text', finalPrompt);
+                targetUrl.searchParams.append('url', ''); 
+                targetUrl.searchParams.append('action', 'analyze');
+                targetUrl.searchParams.append('aspectRatio', '1:1');
+                targetUrl.searchParams.append('session', session);
+
+                const response = await fetch(targetUrl);
+                const data = await response.json();
+
+                let aiResponse = "";
+                if (data && data.result) {
+                    aiResponse = data.result;
+                } else if (data && data.output) {
+                    aiResponse = data.output;
+                } else {
+                    aiResponse = JSON.stringify(data);
+                }
+
+                // Bersihkan respon bot dari simbol asterisk (*)
+                botBubble.innerText = removeAsterisks(aiResponse);
+
+                // Tambahkan penunjuk waktu terima untuk pesan bot setelah selesai memuat
+                const botTime = document.createElement('div');
+                botTime.className = 'timestamp';
+                botTime.innerText = getFormattedTime();
+                botWrapper.appendChild(botTime);
+
+            } catch (error) {
+                console.error(error);
+                botBubble.innerHTML = `<span style="color: #f28b82;">Maaf, sepertinya ada gangguan koneksi. Bisa dicoba lagi?</span>`;
+            } finally {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
